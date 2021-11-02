@@ -286,7 +286,15 @@ public interface PropertyCollection {
   // add a default value of FALSE to Gobblin configuration extract.is.full
   BooleanProperties EXTRACT_IS_FULL = new BooleanProperties("extract.is.full", Boolean.FALSE);
   StringProperties EXTRACT_NAMESPACE = new StringProperties("extract.namespace");
-  StringProperties EXTRACT_TABLE_NAME = new StringProperties("extract.table.name");
+
+  // make extract.table.name required, and abort the job when this parameter is not set
+  StringProperties EXTRACT_TABLE_NAME = new StringProperties("extract.table.name") {
+    @Override
+    public boolean isValid(State state) {
+      return !isBlank(state) && super.isValid(state);
+    }
+  };
+
   StringProperties EXTRACT_TABLE_TYPE = new StringProperties("extract.table.type", "SNAPSHOT_ONLY") {
     @Override
     protected String getValidNonblankWithDefault(State state) {
