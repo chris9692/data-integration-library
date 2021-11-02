@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.linkedin.cdi.extractor.FileDumpExtractor;
 import com.linkedin.cdi.util.SchemaUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -287,11 +288,16 @@ public interface PropertyCollection {
   BooleanProperties EXTRACT_IS_FULL = new BooleanProperties("extract.is.full", Boolean.FALSE);
   StringProperties EXTRACT_NAMESPACE = new StringProperties("extract.namespace");
 
-  // make extract.table.name required, and abort the job when this parameter is not set
+  // make extract.table.name required unless it is a file dump extractor
   StringProperties EXTRACT_TABLE_NAME = new StringProperties("extract.table.name") {
     @Override
     public boolean isValid(State state) {
-      return !isBlank(state) && super.isValid(state);
+      if (isBlank(state)) {
+        if (!MSTAGE_EXTRACTOR_CLASS.get(state).equals(FileDumpExtractor.class.getName())) {
+          return false;
+        }
+      }
+      return super.isValid(state);
     }
   };
 

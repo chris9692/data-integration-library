@@ -464,8 +464,8 @@ for a complete list of Gobblin core properties, please refer to Gobblin document
 ## [extract.table.name](extract.table.name.md)
 
 `extract.table.name` specifies the target table name, not the source table name. This
-is a required parameter. Writers and some converters don't work without it. The job 
-will abort if this property is blank in job configuration. 
+is a required parameter if the extractor is anything other than the FileDumpExtractor.
+Writers and some converters don't work without it.
 
 
 ## [source.class](source.class.md)
