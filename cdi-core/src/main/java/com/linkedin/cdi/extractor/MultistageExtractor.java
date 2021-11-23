@@ -5,6 +5,7 @@
 package com.linkedin.cdi.extractor;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -175,8 +176,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
     extractorKeys.setExplictEof(MSTAGE_DATA_EXPLICIT_EOF.get(state));
     extractorKeys.setSignature(DATASET_URN.get(state));
     extractorKeys.setPreprocessors(getPreprocessors(state));
-    extractorKeys.setPayloads(readPayloads(state));
-    payloadIterator = extractorKeys.getPayloads().iterator();
+    readPayloads(state);
     extractorKeys.logDebugAll(state.getWorkunit());
   }
 
@@ -867,7 +867,8 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
     JsonObject definedParameters = JsonParameter.getParametersAsJson(MSTAGE_PARAMETERS.get(state).toString(),
         getUpdatedWorkUnitVariableValues(getInitialWorkUnitVariableValues()), state);
     JsonObject currentParameters = replaceVariablesInParameters(appendActivationParameter(definedParameters));
-    if (this.payloadIterator.hasNext()) {
+
+    if (payloadIterator != null && payloadIterator.hasNext()) {
       currentParameters.add("payload", payloadIterator.next());
     }
     return currentParameters;
@@ -936,15 +937,21 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
    * override this to process payload differently.
    *
    * @param state WorkUnitState
-   * @return the payload records
    */
-  protected JsonArray readPayloads(State state) {
+  protected void readPayloads(State state) {
     JsonArray payloads = MSTAGE_PAYLOAD_PROPERTY.get(state, getInitialWorkUnitParameters());
     JsonArray records = new JsonArray();
     for (JsonElement entry : payloads) {
-      records.addAll(new HdfsReader(state).readSecondary(entry.getAsJsonObject()));
+      try {
+        records.addAll(new HdfsReader(state).readSecondary(entry.getAsJsonObject()));
+        extractorKeys.setPayloads(records);
+        payloadIterator = records.iterator();
+      } catch (Exception e) {
+        // in exception, put payload definition as payload, keep iterator as null
+        LOG.error(String.format(ERROR_READING_SECONDARY_INPUT, KEY_WORD_PAYLOAD, DATASET_URN.get(state)));
+        extractorKeys.setPayloads(payloads);
+      }
     }
-    return records;
   }
 
   /**

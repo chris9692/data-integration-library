@@ -119,7 +119,6 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     // Parse watermark settings if defined
     List<WatermarkDefinition> definedWatermarks = Lists.newArrayList();
     for (JsonElement definitionJson : jobKeys.getWatermarkDefinition()) {
-      Assert.assertTrue(definitionJson.isJsonObject());
       definedWatermarks.add(new WatermarkDefinition(
           definitionJson.getAsJsonObject(), jobKeys.getIsPartialPartition(),
           jobKeys.getWorkUnitPartitionType()));
@@ -130,7 +129,10 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     JsonArray activations = secondaryInputs.computeIfAbsent(KEY_WORD_ACTIVATION, x -> new JsonArray());
     JsonArray payloads = secondaryInputs.computeIfAbsent(KEY_WORD_PAYLOAD, x -> new JsonArray());
 
-    if (activations.size() == 0 && payloads.size() != 0) {
+    // create a dummy activation if there is no activation secondary input nor defined unit watermark
+    if (activations.size() == 0
+        && definedWatermarks.stream().noneMatch(x -> x.getType().equals(WatermarkDefinition.WatermarkTypes.UNIT))
+        && payloads.size() != 0) {
       JsonObject simpleActivation = new JsonObject();
       activations.add(simpleActivation);
     }
