@@ -1,9 +1,9 @@
 # Work Unit
 
-A time partition and an activation unit make work unit. DIL
-maintains execution state including watermarks for each work unit.
+A time partition and an activation unit make a work unit. DIL
+maintains execution states, including watermarks, for each work unit.
 
-"Time" watermarks can generate partitions. Time partitions are defined by 
+A "time" watermark can generate partitions. Time partitions are defined by 
 [ms.watermark](../parameters/ms.watermark.md) and
 [ms.work.unit.partition](../parameters/ms.work.unit.partition.md).
 
