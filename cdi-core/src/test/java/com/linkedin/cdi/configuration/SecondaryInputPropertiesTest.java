@@ -5,13 +5,9 @@
 package com.linkedin.cdi.configuration;
 
 import com.google.gson.JsonArray;
-import com.linkedin.cdi.connection.S3Connection;
 import com.linkedin.cdi.extractor.MultistageExtractor;
-import com.linkedin.cdi.keys.ExtractorKeys;
 import com.linkedin.cdi.keys.JobKeys;
 import com.linkedin.cdi.source.HdfsSource;
-import com.linkedin.cdi.source.MultistageSource;
-import com.linkedin.cdi.source.S3SourceV2;
 import gobblin.runtime.JobState;
 import java.util.List;
 import org.apache.gobblin.configuration.SourceState;
