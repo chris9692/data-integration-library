@@ -42,6 +42,7 @@ import org.testng.Assert;
 
 import static com.linkedin.cdi.configuration.PropertyCollection.*;
 import static com.linkedin.cdi.configuration.StaticConstants.*;
+import static com.linkedin.cdi.util.WatermarkDefinition.WatermarkTypes.*;
 
 
 /**
@@ -131,7 +132,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
 
     // create a dummy activation if there is no activation secondary input nor defined unit watermark
     if (activations.size() == 0
-        && definedWatermarks.stream().noneMatch(x -> x.getType().equals(WatermarkDefinition.WatermarkTypes.UNIT))
+        && definedWatermarks.stream().noneMatch(x -> x.getType().equals(UNIT))
         && payloads.size() != 0) {
       JsonObject simpleActivation = new JsonObject();
       activations.add(simpleActivation);
@@ -214,7 +215,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         }
         datetimeWatermark = wmd;
       }
-      if (wmd.getType() == WatermarkDefinition.WatermarkTypes.UNIT) {
+      if (wmd.getType() == UNIT) {
         if (unitWatermark != null) {
           throw new RuntimeException("1 and only unit type watermark is allowed"
               + ", including the unit watermark generated from secondary input.");
