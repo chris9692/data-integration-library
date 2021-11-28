@@ -230,7 +230,6 @@ public class JsonExtractorTest {
     Map<String, Map<String, String>> derivedFields = ImmutableMap.of("formula",
         ImmutableMap.of("type", "non-epoc", "source", "start_time", "format", "yyyy-MM-dd"));
     when(jobKeys.getDerivedFields()).thenReturn(derivedFields);
-    jsonExtractor.setTimezone("America/Los_Angeles");
     JsonObject row = new JsonObject();
     JsonObject pushDowns = new JsonObject();
     JsonObject actual;
