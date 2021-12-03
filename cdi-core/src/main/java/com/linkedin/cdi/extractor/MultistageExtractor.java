@@ -449,11 +449,11 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
     JsonArray columns = new JsonArray();
     for (Map.Entry<String, Map<String, String>> entry : jobKeys.getDerivedFields().entrySet()) {
       JsonObject column = new JsonObject();
-      column.addProperty(KEY_WORD_COLUMN_NAME, entry.getKey());
+      column.addProperty("columnName", entry.getKey());
       JsonObject dataType = new JsonObject();
       switch (entry.getValue().get(KEY_WORD_TYPE)) {
-        case KEY_WORD_EPOC:
-          dataType.addProperty(KEY_WORD_TYPE, KEY_WORD_LONG);
+        case "epoc":
+          dataType.addProperty(KEY_WORD_TYPE, "long");
           break;
         case KEY_WORD_STRING:
         case KEY_WORD_INTEGER:
@@ -461,7 +461,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
         case KEY_WORD_BOOLEAN:
           dataType.addProperty(KEY_WORD_TYPE, entry.getValue().get(KEY_WORD_TYPE));
           break;
-        case KEY_WORD_REGEXP:
+        case "regexp":
           dataType.addProperty(KEY_WORD_TYPE, KEY_WORD_STRING);
           break;
         default:
@@ -471,8 +471,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
               source.isJsonNull() ? KEY_WORD_STRING : source.getAsJsonObject().get(KEY_WORD_TYPE).getAsString());
           break;
       }
-      column.add(KEY_WORD_DATA_TYPE, dataType);
-      column.addProperty(KEY_WORD_IS_NULLABLE, Boolean.TRUE);
+      column.add("dataType", dataType);
       columns.add(column);
     }
     return columns;
