@@ -77,14 +77,6 @@ public class WatermarkDefinition {
     this.units = units;
   }
 
-  public String getTimezone() {
-    return timezone;
-  }
-
-  public void setTimezone(String timezone) {
-    this.timezone = timezone;
-  }
-
   public enum WatermarkTypes {
     DATETIME("datetime"),
     UNIT("unit");
@@ -110,7 +102,6 @@ public class WatermarkDefinition {
   // units is the internal storage of work units string, it should be
   // a JsonArray formatted as String
   private String units;
-  private String timezone = "";
 
   /**
    * A constructor that creates a Unit watermark definition
@@ -214,44 +205,43 @@ public class WatermarkDefinition {
     }
   }
 
+  /**
+   * Weekly/Monthly partitioned jobs/sources expect the fromDate to be less than toDate.
+   * Keeping the precision at day level for Weekly and Monthly partitioned watermarks.
+   *
+   * If partial partition is set to true, we don't floor the watermark for a given
+   * partition type.
+   * For daily partition type, 2019-01-01T12:31:00 will be rounded to 2019-01-01T00:00:00,
+   * if partial partition is false.
+   *
+   * @param input the data time formula or string
+   * @return DateTime object
+   */
   @VisibleForTesting
-  DateTime getDateTime(String input) {
-    DateTimeZone timeZone = DateTimeZone.forID(timezone.isEmpty() ? DEFAULT_TIMEZONE : timezone);
-    /**
-     * Weekly/Monthly partitioned jobs/sources expect the fromDate to be less than toDate.
-     * Keeping the precision at day level for Weekly and Monthly partitioned watermarks.
-     *
-     * If partial partition is set to true, we don't floor the watermark for a given
-     * partition type.
-     * For daily partition type, 2019-01-01T12:31:00 will be rounded to 2019-01-01T00:00:00,
-     * if partial partition is false.
-     */
+  DateTime getDateTime(final String input) {
+    String dtString = input;
+    DateTimeZone timeZone = DateTimeZone.forID(TZ_LOS_ANGELES);
     if (input.equals("-")) {
-      if (WorkUnitPartitionTypes.isMultiDayPartitioned(workUnitPartitionType)) {
-        return DateTime.now().withZone(timeZone).dayOfMonth().roundFloorCopy();
-      }
-      if (this.getIsPartialPartition()) {
-        return DateTime.now().withZone(timeZone);
-      }
-      return DateTime.now().withZone(timeZone).dayOfMonth().roundFloorCopy();
-    } else if (input.matches("P\\d+D(T\\d+H){0,1}")) {
-      /*
-      The standard ISO format - PyYmMwWdDThHmMsS
-      Only supporting DAY and HOUR. DAY component is mandatory.
-      e.g.P1D, P2DT5H, P0DT7H
-      */
-      Period period = Period.parse(input);
-      DateTime dt = DateTime.now().withZone(timeZone).minus(period);
-      if (WorkUnitPartitionTypes.isMultiDayPartitioned(workUnitPartitionType)) {
-        return dt.dayOfMonth().roundFloorCopy();
-      }
-      if (this.getIsPartialPartition()) {
-        return dt;
-      }
-      return dt.dayOfMonth().roundFloorCopy();
+      dtString = "P0DT0H0M";
+    } else if (input.contains("\\.")) {
+      timeZone = DateTimeZone.forID(input.split("\\.")[1]);
+      dtString = input.split("\\.")[0];
     }
 
-    return DateTimeUtils.parse(input, timezone.isEmpty() ? DEFAULT_TIMEZONE : timezone);
+    // The standard ISO format - PyYmMwWdDThHmMsS, supporting DAY and HOUR only with DAY component being mandatory.
+    // e.g.P1D, P2DT5H, P0DT7H
+    if (dtString.matches(REGEXP_TIME_DURATION_PATTERN)) {
+      Period period = Period.parse(dtString);
+      if (dtString.matches(REGEXP_DAY_ONLY_DURATION_PATTERN)) {
+        return DateTime.now().withZone(timeZone).dayOfMonth().roundFloorCopy().minus(period);
+      } else if (dtString.matches(REGEXP_HOUR_ONLY_DURATION_PATTERN)) {
+        return DateTime.now().withZone(timeZone).hourOfDay().roundFloorCopy().minus(period);
+      } else {
+        return DateTime.now().withZone(timeZone).minuteOfHour().roundFloorCopy().minus(period);
+      }
+    } else {
+      return DateTimeUtils.parse(dtString, TZ_LOS_ANGELES);
+    }
   }
 
   private Long getMillis(String input) {
