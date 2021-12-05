@@ -256,6 +256,14 @@ public class MultistagePropertiesIndividualTest {
     // P0DT0H0M is valid
     state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0DT0H0M\", \"to\": \"P0DT0H0M\"}}]");
     Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
+
+    // P0DT0H0M.UTC is valid
+    state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0DT0H0M.UTC\", \"to\": \"P0DT0H0M.UTC\"}}]");
+    Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
+
+    // P0DT0H0M.America/Los_Angeles is valid
+    state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0DT0H0M.America/Los_Angeles\", \"to\": \"P0DT0H0M.America/Los_Angeles\"}}]");
+    Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
   }
 
   @Test
