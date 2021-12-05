@@ -244,6 +244,18 @@ public class MultistagePropertiesIndividualTest {
     // YYYYMMDD format is not supported for now
     state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"20091201\", \"to\": \"-\"}}]");
     Assert.assertFalse(MSTAGE_WATERMARK.isValid(state));
+
+    // P0D is valid
+    state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0D\", \"to\": \"P0D\"}}]");
+    Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
+
+    // P0DT0H is valid
+    state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0DT0H\", \"to\": \"P0DT0H\"}}]");
+    Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
+
+    // P0DT0H0M is valid
+    state.setProp("ms.watermark", "[{\"name\": \"system\",\"type\": \"datetime\", \"range\": {\"from\": \"P0DT0H0M\", \"to\": \"P0DT0H0M\"}}]");
+    Assert.assertTrue(MSTAGE_WATERMARK.isValid(state));
   }
 
   @Test
