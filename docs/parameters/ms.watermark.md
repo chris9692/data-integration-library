@@ -98,17 +98,14 @@ commonly, it is "-". The `to` value can be PxD if the reference timeframe has to
 end by certain number of days ago. 
 
 When `from` or `to` are specified using IOS duration format, the actual date time is rounded. 
-- PxD will round to day level by truncating hours and below precision. This truncation is timezone dependent, so a timezone is required
-  to correctly truncate to the day level. If no timezone is specified, America/Los_Angeles is assumed for backward compatibility.
-- PxDTyH will round to hour level by truncating minutes and below precision. This truncation is timezone independent.
-- PxDTyHzM will round to minute level by truncating seconds and below precision. This truncation is timezone independent.
+- PxD will round to day level by truncating hours and below precision
+- PxDTyH will round to hour level by truncating minutes and below precision
+- PxDTyHzM will round to minute level by truncating seconds and below precision
 
 When `from` or `to` are specified using IOS duration format, it can have an optional timezone code. 
 The ISO duration string and timezone code are concatenated by a ".". The timezone codes includes UTC, GMT, Amerca/Los_Angeles etc., for example:
 - `P0D.UTC`
 - `P0D.America/Los_Angeles`
-
-Because of truncation, `P0D.UTC` is different from `P0D.America/Los_Angeles`, and `P0D` is also different from `P0DT0H` or `P0DT0H0M`.    
 
 #### datetime watermark examples
 
