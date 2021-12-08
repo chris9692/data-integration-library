@@ -249,8 +249,6 @@ public interface PropertyCollection {
     }
   };
 
-  BooleanProperties MSTAGE_WORK_UNIT_PARTIAL_PARTITION =
-      new BooleanProperties("ms.work.unit.partial.partition", Boolean.TRUE);
   StringProperties MSTAGE_WORK_UNIT_PARTITION = new StringProperties("ms.work.unit.partition", "none");
   StringProperties CONVERTER_AVRO_DATE_FORMAT = new StringProperties("converter.avro.date.format");
   StringProperties CONVERTER_AVRO_TIME_FORMAT = new StringProperties("converter.avro.time.format");
@@ -367,7 +365,6 @@ public interface PropertyCollection {
       MSTAGE_WORK_UNIT_MIN_UNITS,
       MSTAGE_WORK_UNIT_PACING_SECONDS,
       MSTAGE_WORK_UNIT_PARALLELISM_MAX,
-      MSTAGE_WORK_UNIT_PARTIAL_PARTITION,
       MSTAGE_WORK_UNIT_PARTITION,
       CONVERTER_AVRO_DATE_FORMAT,
       CONVERTER_AVRO_TIME_FORMAT,
@@ -412,6 +409,7 @@ public interface PropertyCollection {
           .put("ms.csv.skip.lines", MSTAGE_CSV)
           .put("ms.converter.csv.max.failures", MSTAGE_CSV)
           .put("ms.converter.keep.null.strings", MSTAGE_CSV)
+          .put("ms.work.unit.partial.partition", MSTAGE_WATERMARK)
           .put("csv.max.failures", MSTAGE_CSV)
           .put("sftpConn.timeout", MSTAGE_SFTP_CONN_TIMEOUT_MILLIS)
           .build();

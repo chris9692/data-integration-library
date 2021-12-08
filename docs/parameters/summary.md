@@ -447,10 +447,14 @@ of the work unit.
 `ms.work.unit.parallelism.max` defines maximum possible parallel work 
 units that can be processed in one job execution.
 
-## [ms.work.unit.partial.partition](ms.work.unit.partial.partition.md)
+## ms.work.unit.partial.partition
 
-`ms.work.unit.partial.partition` specifies whether the last partition of a multi-day partition scheme can be partial. 
-If set to true, it allows the last multi-day partition to be partial (partial month or partial week). 
+`ms.work.unit.partial.partition` is deprecated. The new way of specifying truncation is to use ISO duration in 
+[ms.watermark](ms.watermark.md).
+
+- PxD.tz, truncate to day level for that timezone, default timezone if America/Los_Angeles
+- PxDTyH, truncate to hour level, timezone has no impact
+- PxDTyHzM, truncate to minute level, timezone has no impact
 
 ## [ms.work.unit.partition](ms.work.unit.partition.md)
 
