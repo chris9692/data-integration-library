@@ -31,6 +31,7 @@ public class SchemaUtils {
    *
    * @param definedColumns column names defined in the output schema
    * @param sourceColumns column names at the source
+   * @param derivedFields the number of derived fields
    * @return true if first N columns are all existing in source and false other wise
    *
    *
@@ -39,11 +40,14 @@ public class SchemaUtils {
    * Example 3: definedColumns: [A, B, C], sourceColumns: [A, B] ==> true, C is assumed to be a derived field
    *
    */
-  public static boolean isValidSchemaDefinition(List<String> definedColumns, List<String> sourceColumns) {
+  public static boolean isValidSchemaDefinition(
+      List<String> definedColumns,
+      List<String> sourceColumns,
+      int derivedFields) {
     Set<String> columns = new HashSet<>();
     sourceColumns.forEach(x -> columns.add(x.toLowerCase()));
 
-    for (int i = 0; i < definedColumns.size(); i++) {
+    for (int i = 0; i < definedColumns.size() - derivedFields; i++) {
       if (!columns.contains(definedColumns.get(i).toLowerCase())) {
         LOG.error("Defined Schema does not match source.");
         LOG.error("Schema column: {}", definedColumns);

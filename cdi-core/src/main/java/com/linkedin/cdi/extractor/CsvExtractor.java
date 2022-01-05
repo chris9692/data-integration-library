@@ -383,7 +383,8 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
           List<String> schemaColumns =
               new ArrayList<>(new JsonIntermediateSchema(jobKeys.getOutputSchema()).getColumns().keySet());
           List<String> headerRow = Arrays.asList(csvExtractorKeys.getHeaderRow());
-          csvExtractorKeys.setIsValidOutputSchema(SchemaUtils.isValidSchemaDefinition(schemaColumns, headerRow));
+          csvExtractorKeys.setIsValidOutputSchema(
+              SchemaUtils.isValidSchemaDefinition(schemaColumns, headerRow, jobKeys.getDerivedFields().size()));
         }
       }
       linesRead++;
