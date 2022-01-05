@@ -8,7 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.linkedin.cdi.configuration.StaticConstants;
 import com.linkedin.cdi.connection.MultistageConnection;
 import com.linkedin.cdi.exception.RetriableAuthenticationException;
 import com.linkedin.cdi.filter.JsonSchemaBasedFilter;
@@ -51,6 +53,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 
 import static com.linkedin.cdi.configuration.PropertyCollection.*;
 import static com.linkedin.cdi.configuration.StaticConstants.*;
@@ -973,5 +976,22 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
           jobKeys.getMinWorkUnitRecords()));
     }
     return null;
+  }
+
+  /**
+   * This method rely on the parent class to get a JsonArray formatted schema, and pass it out as
+   * a string. Typically we expect the downstream is a CsvToJsonConverter.
+   *
+   * @return schema that is structured as a JsonArray but formatted as a String
+   */
+  protected JsonArray getSchemaArray() {
+    LOG.debug("Retrieving schema definition");
+    JsonArray schemaArray = getOrInferSchema();
+    Assert.assertNotNull(schemaArray);
+    if (jobKeys.getDerivedFields().size() > 0 && JsonUtils.get(StaticConstants.KEY_WORD_COLUMN_NAME,
+        jobKeys.getDerivedFields().keySet().iterator().next(), StaticConstants.KEY_WORD_COLUMN_NAME, schemaArray) == JsonNull.INSTANCE) {
+      schemaArray.addAll(addDerivedFieldsToAltSchema());
+    }
+    return schemaArray;
   }
 }
