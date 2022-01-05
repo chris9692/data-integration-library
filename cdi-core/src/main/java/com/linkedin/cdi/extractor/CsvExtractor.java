@@ -260,48 +260,6 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
   }
 
   /**
-   * Expand a column projection input string
-   * @param columnProjection columns to project
-   * @param numColumnsInPredefinedSchema number of columns
-   * @return a set of column indices
-   */
-  private Set<Integer> expandColumnProjection(String columnProjection, int numColumnsInPredefinedSchema) {
-    Set<Integer> expandedColumnProjection = new HashSet<>();
-    if (columnProjection != null && columnProjection.length() > 0) {
-      for (String val : columnProjection.split(",")) {
-        if (val.matches("^(\\d+)-(\\d+)$")) {  // range
-          int left = Integer.parseInt(val.split("-")[0]);
-          int right = Integer.parseInt(val.split("-")[1]);
-          if (left < 0 || right < 0 || left >= right) {
-            failWorkUnit(String.format("Invalid range in column projection input %s", val));
-            break;
-          } else {
-            for (int i = left; i <= right; i++) {
-              expandedColumnProjection.add(i);
-            }
-          }
-        } else if (val.matches("^\\d+$")) {  // single number
-          int col = Integer.parseInt(val);
-          if (col < 0) {
-            failWorkUnit(String.format("Invalid index in column projection input %s", val));
-            break;
-          } else {
-            expandedColumnProjection.add(col);
-          }
-        } else {  // unknown patterns
-          failWorkUnit(String.format("Invalid value in column projection input %s", val));
-          break;
-        }
-      }
-
-      if (expandedColumnProjection.size() != numColumnsInPredefinedSchema) {
-        failWorkUnit("The number of columns in column projection does not match the size of the predefined schema");
-      }
-    }
-    return expandedColumnProjection;
-  }
-
-  /**
    * Helper function that builds the column name to index map
    * @param schema the Avro-flavor schema
    */
