@@ -191,7 +191,7 @@ public class AvroExtractor extends MultistageExtractor<Schema, GenericRecord> {
         List<String> schemaColumns = new ArrayList<>(new JsonIntermediateSchema(jobKeys.getOutputSchema())
             .getColumns().keySet());
         List<String> fieldNames = AvroSchemaUtils.getSchemaFieldNames(avroExtractorKeys.getAvroOutputSchema());
-        avroExtractorKeys.setIsValidOutputSchema(SchemaUtils.isValidOutputSchema(schemaColumns, fieldNames));
+        avroExtractorKeys.setIsValidOutputSchema(SchemaUtils.isValidSchemaDefinition(schemaColumns, fieldNames));
       }
     } catch (Exception e) {
       LOG.error("Source Error: {}", e.getMessage());

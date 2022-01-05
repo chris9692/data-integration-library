@@ -21,22 +21,22 @@ public class SchemaUtilsTest {
     // valid schema
     List<String> schemaColumns = Arrays.asList("a", "b");
     List<String> sourceColumns = Arrays.asList("a", "B", "C");
-    Assert.assertTrue(SchemaUtils.isValidOutputSchema(schemaColumns, sourceColumns));
+    Assert.assertTrue(SchemaUtils.isValidSchemaDefinition(schemaColumns, sourceColumns));
 
     // valid schema
     schemaColumns = Arrays.asList("a", "c");
     sourceColumns = Arrays.asList("a", "B", "C");
-    Assert.assertTrue(SchemaUtils.isValidOutputSchema(schemaColumns, sourceColumns));
+    Assert.assertTrue(SchemaUtils.isValidSchemaDefinition(schemaColumns, sourceColumns));
 
     // some columns in the schema is nowhere to be found in the source
     schemaColumns = Arrays.asList("a", "e");
     sourceColumns = Arrays.asList("a", "B", "C");
-    Assert.assertFalse(SchemaUtils.isValidOutputSchema(schemaColumns, sourceColumns));
+    Assert.assertFalse(SchemaUtils.isValidSchemaDefinition(schemaColumns, sourceColumns));
 
-    // order mismatch
+    // order mismatch is allowed
     schemaColumns = Arrays.asList("c", "a", "b");
     sourceColumns = Arrays.asList("a", "B", "C");
-    Assert.assertFalse(SchemaUtils.isValidOutputSchema(schemaColumns, sourceColumns));
+    Assert.assertTrue(SchemaUtils.isValidSchemaDefinition(schemaColumns, sourceColumns));
   }
 
   @Test
