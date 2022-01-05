@@ -979,10 +979,12 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
   }
 
   /**
-   * This method rely on the parent class to get a JsonArray formatted schema, and pass it out as
-   * a string. Typically we expect the downstream is a CsvToJsonConverter.
+   * Add derived fields to defined schema if they are not in already.
    *
-   * @return schema that is structured as a JsonArray but formatted as a String
+   * In a LKG (last known good) source schema definition, the derived fields could
+   * have been included in the schedule definition already, hence no action.
+   *
+   * @return schema that is structured as a JsonArray with derived fields if they are not added already
    */
   protected JsonArray getSchemaArray() {
     LOG.debug("Retrieving schema definition");
