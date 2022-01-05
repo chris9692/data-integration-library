@@ -85,8 +85,7 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
     // check if user has defined the output schema
     if (jobKeys.hasOutputSchema()) {
       JsonArray outputSchema = jobKeys.getOutputSchema();
-      csvExtractorKeys.setColumnProjection(expandColumnProjection(MSTAGE_CSV.getColumnProjection(state),
-          outputSchema.size()));
+      csvExtractorKeys.setColumnProjection(MSTAGE_CSV.getColumnProjection(state));
       // initialize the column name to index map based on the schema when derived fields are present
       if (jobKeys.getDerivedFields().entrySet().size() > 0) {
         buildColumnToIndexMap(outputSchema);
@@ -113,14 +112,7 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
    */
   @Override
   public String getSchema() {
-    LOG.debug("Retrieving schema definition");
-    JsonArray schemaArray = super.getOrInferSchema();
-    Assert.assertNotNull(schemaArray);
-    if (jobKeys.getDerivedFields().size() > 0 && JsonUtils.get(StaticConstants.KEY_WORD_COLUMN_NAME,
-        jobKeys.getDerivedFields().keySet().iterator().next(), StaticConstants.KEY_WORD_COLUMN_NAME, schemaArray) == JsonNull.INSTANCE) {
-      schemaArray.addAll(addDerivedFieldsToAltSchema());
-    }
-    return schemaArray.toString();
+    return getSchemaArray().toString();
   }
 
   /**
@@ -262,7 +254,7 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
   protected void setRowFilter(JsonArray schemaArray) {
     if (rowFilter == null) {
       if (MSTAGE_ENABLE_SCHEMA_BASED_FILTERING.get(state)) {
-        rowFilter = new CsvSchemaBasedFilter(new JsonIntermediateSchema(schemaArray), csvExtractorKeys);
+        rowFilter = new CsvSchemaBasedFilter(schemaArray, csvExtractorKeys);
       }
     }
   }
@@ -391,7 +383,8 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
           List<String> schemaColumns =
               new ArrayList<>(new JsonIntermediateSchema(jobKeys.getOutputSchema()).getColumns().keySet());
           List<String> headerRow = Arrays.asList(csvExtractorKeys.getHeaderRow());
-          csvExtractorKeys.setIsValidOutputSchema(SchemaUtils.isValidOutputSchema(schemaColumns, headerRow));
+          csvExtractorKeys.setIsValidOutputSchema(
+              SchemaUtils.isValidSchemaDefinition(schemaColumns, headerRow, jobKeys.getDerivedFields().size()));
         }
       }
       linesRead++;
