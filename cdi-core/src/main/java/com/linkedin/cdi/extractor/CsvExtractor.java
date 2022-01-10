@@ -149,7 +149,8 @@ public class CsvExtractor extends MultistageExtractor<String, String[]> {
       CsvSchemaBasedFilter csvSchemaBasedFilter = (CsvSchemaBasedFilter) rowFilter;
       if (csvSchemaBasedFilter != null) {
         try {
-          if (csvExtractorKeys.getColumnProjection().isEmpty()) {
+          if (csvExtractorKeys.getColumnProjection().isEmpty()
+              && csvExtractorKeys.getHeaderRow() != null) {
             csvExtractorKeys.setColumnProjection(mapColumnsDynamically(this.getSchemaArray()));
           }
           row = csvSchemaBasedFilter.filter(row);
