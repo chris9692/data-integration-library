@@ -4,9 +4,7 @@
 
 package com.linkedin.cdi.filter;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.linkedin.cdi.keys.CsvExtractorKeys;
 import com.linkedin.cdi.util.JsonIntermediateSchema;
 import java.util.Arrays;
@@ -14,8 +12,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.linkedin.cdi.configuration.StaticConstants.*;
 
 
 /**
