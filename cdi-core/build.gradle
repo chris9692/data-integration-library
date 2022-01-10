@@ -50,6 +50,8 @@ dependencies {
   testCompile externalDependency.'powermock-api-mockito'
   testCompile externalDependency.'powermock-module-testng'
   testCompile externalDependency.'mockito-core'
+  testRuntime externalDependency.'orcTools'
+  testRuntime externalDependency.'opencsv'
 
 //  compile externalDependency.'slf4j-api'
 //  runtime externalDependency.'commons-csv'
