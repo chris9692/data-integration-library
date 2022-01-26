@@ -183,7 +183,7 @@ public interface PropertyCollection {
 
   JsonObjectProperties MSTAGE_SCHEMA_CLEANSING = new JsonObjectProperties("ms.schema.cleansing");
   SecondaryInputProperties MSTAGE_SECONDARY_INPUT = new SecondaryInputProperties("ms.secondary.input");
-  StringProperties MSTAGE_SECRET_MANAGER_CLASS = new StringProperties("com.linkedin.cdi.util.GobblinSecretManager");
+  StringProperties MSTAGE_SECRET_MANAGER_CLASS = new StringProperties("ms.secret.manager.class", "com.linkedin.cdi.util.GobblinSecretManager");
   JsonObjectProperties MSTAGE_SESSION_KEY_FIELD = new JsonObjectProperties("ms.session.key.field");
 
   // default: 60 seconds, minimum: 0, maximum: -

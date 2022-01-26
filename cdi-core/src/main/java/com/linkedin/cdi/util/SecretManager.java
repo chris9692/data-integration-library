@@ -17,6 +17,11 @@ import static com.linkedin.cdi.configuration.PropertyCollection.*;
 public abstract class SecretManager {
   final private static Logger LOG = LoggerFactory.getLogger(SecretManager.class);
   private static SecretManager manager = null;
+  protected State state;
+
+  public SecretManager(State state) {
+    this.state = state;
+  }
   /**
    * Decrypt the encrypted string
    * @param input the encrypted string

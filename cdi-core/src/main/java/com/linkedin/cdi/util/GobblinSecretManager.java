@@ -11,10 +11,8 @@ import org.apache.gobblin.configuration.State;
  * Interface for secret encryption and decryption
  */
 public class GobblinSecretManager extends SecretManager {
-  final private State state;
-
-  GobblinSecretManager(State state) {
-    this.state = state;
+  public GobblinSecretManager(State state) {
+    super(state);
   }
 
   /**
