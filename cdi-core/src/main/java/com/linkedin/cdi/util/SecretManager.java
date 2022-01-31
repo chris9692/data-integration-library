@@ -36,6 +36,11 @@ public abstract class SecretManager {
    */
   abstract public String encrypt(String input);
 
+  /**
+   * Close out any resources allocated. The default does nothing.
+   */
+  public void close() { };
+
   static public SecretManager getInstance(State state) {
     if (SecretManager.manager != null) {
       return SecretManager.manager;
