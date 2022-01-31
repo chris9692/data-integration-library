@@ -41,6 +41,11 @@ public abstract class SecretManager {
    */
   public void close() { };
 
+  /**
+   * The singleton instantiation method
+   * @param state configuration state object
+   * @return the singleton SecretManager instance
+   */
   static public SecretManager getInstance(State state) {
     if (SecretManager.manager != null) {
       return SecretManager.manager;
