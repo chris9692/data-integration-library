@@ -15,12 +15,16 @@ import com.linkedin.cdi.util.JdbcUtils;
 import com.linkedin.cdi.util.ParameterTypes;
 import com.linkedin.cdi.util.SchemaBuilder;
 import com.linkedin.cdi.util.WorkUnitStatus;
+import com.opencsv.CSVWriter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -268,34 +272,28 @@ public class JdbcConnection extends MultistageConnection {
    */
   private InputStream toCsvInputStream(final ResultSet resultSet, final ResultSetMetaData resultSetMetadata)
       throws SQLException {
-    Path path = null;
     try {
-      path = Files.createTempFile(null, null);
-      OutputStream os = Files.newOutputStream(path);
-      String row = getRowAsCsv(resultSet, resultSetMetadata);
-      long totalBytes = 0;
-      long totalChars = 0;
-      while (row != null) {
-        os.write(row.getBytes(StandardCharsets.UTF_8), 0, row.length());
-        totalBytes += row.getBytes(StandardCharsets.UTF_8).length;
-        totalChars += row.length();
-        row = getRowAsCsv(resultSet, resultSetMetadata);
-      }
-      os.flush();
-      os.close();
-      LOG.info(String.format("Wrote %d characters (%d bytes) to temp file %s", totalChars, totalBytes, path.toAbsolutePath()));
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    } finally {
-      // set proper file permission for security
-      if (path != null) {
-        File file = path.toFile();
-        file.deleteOnExit();
-        file.setReadable(true, true);
-      }
-    }
+      Path path = Files.createTempFile(null, null);
+      File file = path.toFile();
+      file.deleteOnExit();
+      file.setReadable(true, true);
 
-    try {
+      OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(path.toFile()), StandardCharsets.UTF_8);
+      CSVWriter csvWriter = new CSVWriter(writer,
+          MSTAGE_CSV.getFieldSeparator(getState()).charAt(0),
+          MSTAGE_CSV.getQuoteCharacter(getState()).charAt(0),
+          MSTAGE_CSV.getEscapeCharacter(getState()).charAt(0));
+
+      long lines = 0;
+      while (resultSet.next()) {
+        csvWriter.writeNext(getRowAsStringArray(resultSet, resultSetMetadata));
+        lines ++;
+      }
+
+      csvWriter.flush();
+      csvWriter.close();
+
+      LOG.info(String.format("Wrote %d lines to temp file %s", lines, path.toAbsolutePath()));
       return Files.newInputStream(path);
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -307,22 +305,14 @@ public class JdbcConnection extends MultistageConnection {
    *
    * @param resultSet the input result set
    * @param resultSetMetadata the result set metadata
-   * @return a string including all fields of 1 record separated by CSV separator and ended with a system line separator
+   * @return a string array including all fields
    * @throws SQLException SQL Exception from processing ResultSet
    */
-  private String getRowAsCsv(final ResultSet resultSet, final ResultSetMetaData resultSetMetadata) throws SQLException {
-    StringBuilder builder = new StringBuilder();
-    if (!resultSet.next()) {
-      return null;
-    }
+  private String[] getRowAsStringArray(final ResultSet resultSet, final ResultSetMetaData resultSetMetadata) throws SQLException {
+    String[] row = new String[resultSetMetadata.getColumnCount()];
     for (int i = 0; i < resultSetMetadata.getColumnCount(); i++) {
-      builder.append(StringEscapeUtils.escapeCsv(JdbcUtils.parseColumnAsString(resultSet, resultSetMetadata, i + 1)));
-      if (i < resultSetMetadata.getColumnCount() - 1) {
-        builder.append(MSTAGE_CSV.getFieldSeparator(getState()));
-      } else {
-        builder.append(System.lineSeparator());
-      }
+      row[i] = JdbcUtils.parseColumnAsString(resultSet, resultSetMetadata, i + 1);
     }
-    return builder.toString();
+    return row;
   }
 }
