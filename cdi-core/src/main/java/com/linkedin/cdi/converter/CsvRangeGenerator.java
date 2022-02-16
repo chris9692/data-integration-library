@@ -32,8 +32,6 @@ import static com.linkedin.cdi.configuration.StaticConstants.*;
  */
 public class CsvRangeGenerator extends Converter<String, JsonArray, String[], JsonObject> {
   private static final Logger LOG = LoggerFactory.getLogger(CsvRangeGenerator.class);
-  private static final int BATCH_SIZE_DEFAULT = 10 * 1000;
-  private static final String RANGE_MAX_DEFAULT = "zzzzzzzzzz";
   private JsonArray targetSchema;
   private String rangeStart = null;
   private String rangeEnd = null;
@@ -41,7 +39,7 @@ public class CsvRangeGenerator extends Converter<String, JsonArray, String[], Js
   private String columnStart;
   private String columnEnd;
 
-  private int batchSize = 0;
+  private long batchSize = 0;
   private String rangeMax = null;
 
 
@@ -54,8 +52,8 @@ public class CsvRangeGenerator extends Converter<String, JsonArray, String[], Js
     columnEnd = targetSchema.get(1).getAsJsonObject().get(KEY_WORD_COLUMN_NAME).getAsString();
 
     // batchSize has to be positive integers
-    batchSize = BATCH_SIZE_DEFAULT;
-    rangeMax = RANGE_MAX_DEFAULT;
+    batchSize = MSTAGE_RANGE_GENERATOR_BATCH_SIZE.get(workUnit);
+    rangeMax = MSTAGE_RANGE_GENERATOR_MAX_VALUE.get(workUnit);
     return this;
   }
 
