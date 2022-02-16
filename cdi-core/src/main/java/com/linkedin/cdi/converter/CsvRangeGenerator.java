@@ -20,26 +20,29 @@ import static com.linkedin.cdi.configuration.StaticConstants.*;
 
 /**
  * This converter takes an ordered list of values and generates ranges
- * per give batch size.
+ * per given batch size.
  *
  * Given a list [0...50] and batch size 10, it will generate ranges
- * [0, 10)
- * [10, 20)
- * [20, 30)
- * [30, 40)
- * [40, 50)
- * [50, 60)
+ * [0, 9]
+ * [10, 19]
+ * [20, 29]
+ * [30, 39]
+ * [40, 49]
+ * [50, 50]
  */
 public class CsvRangeGenerator extends Converter<String, JsonArray, String[], JsonObject> {
   private static final Logger LOG = LoggerFactory.getLogger(CsvRangeGenerator.class);
   private static final int BATCH_SIZE_DEFAULT = 10 * 1000;
+  private static final String RANGE_MAX_DEFAULT = "zzzzzzzzzz";
   private JsonArray targetSchema;
   private String rangeStart = null;
   private String rangeEnd = null;
   private int count = 0;
-  private int batchSize = 0;
   private String columnStart;
   private String columnEnd;
+
+  private int batchSize = 0;
+  private String rangeMax = null;
 
 
   @Override
@@ -52,6 +55,7 @@ public class CsvRangeGenerator extends Converter<String, JsonArray, String[], Js
 
     // batchSize has to be positive integers
     batchSize = BATCH_SIZE_DEFAULT;
+    rangeMax = RANGE_MAX_DEFAULT;
     return this;
   }
 
@@ -65,6 +69,7 @@ public class CsvRangeGenerator extends Converter<String, JsonArray, String[], Js
   public Iterable<JsonObject> convertRecord(JsonArray outputSchema, String[] inputRecord, WorkUnitState workUnit) {
     if (inputRecord[0].equals(KEY_WORD_EOF)) {
       // only output when there's at least one record
+      rangeEnd = rangeMax;
       return outputIterable(1);
     }
 
