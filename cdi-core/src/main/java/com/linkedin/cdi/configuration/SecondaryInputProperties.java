@@ -25,6 +25,23 @@ public class SecondaryInputProperties extends JsonArrayProperties {
   private static final Logger LOG = LoggerFactory.getLogger(SecondaryInputProperties.class);
   final private static int RETRY_DELAY_IN_SEC_DEFAULT = 300;
   final private static int RETRY_COUNT_DEFAULT = 3;
+  final private static List<String> CATEGORIES = Lists.newArrayList("authentication", "activation", "payload");
+  final public static String CATEGORY = "category";
+
+  public enum Categories {
+    ACTIVATION("activation"),
+    AUTHENTICATION("authentication"),
+    PAYLOAD("payload"),
+    VALIDATION("validation");
+    public final String name;
+    /**
+     * initialize the enum item with a default name
+     * @param name the title of the enum item
+     */
+    Categories(String name) {
+      this.name = name;
+    }
+  }
 
   /**
    * Constructor with implicit default value
@@ -36,7 +53,6 @@ public class SecondaryInputProperties extends JsonArrayProperties {
 
   @Override
   public boolean isValid(State state) {
-    final List<String> categories = Lists.newArrayList("authentication", "activation", "payload");
     if (super.isValid(state) && !isBlank(state)) {
       JsonArray value = GSON.fromJson(state.getProp(getConfig()), JsonArray.class);
 
@@ -51,7 +67,7 @@ public class SecondaryInputProperties extends JsonArrayProperties {
       for (JsonElement si : value) {
         if (JsonUtils.get(KEY_WORD_CATEGORY, si.getAsJsonObject()) != JsonNull.INSTANCE) {
           String category = JsonUtils.get(KEY_WORD_CATEGORY, si.getAsJsonObject()).getAsString();
-          if (categories.stream().noneMatch(x -> x.equals(category))) {
+          if (CATEGORIES.stream().noneMatch(x -> x.equals(category))) {
             return false;
           }
         }
@@ -68,7 +84,7 @@ public class SecondaryInputProperties extends JsonArrayProperties {
    */
   public Map<String, JsonArray> readAuthenticationToken(State state) {
     Map<String, JsonArray> secondaryInputs = new HashMap<>();
-    JsonArray categoryData = secondaryInputs.computeIfAbsent(KEY_WORD_AUTHENTICATION, x -> new JsonArray());
+    JsonArray categoryData = secondaryInputs.computeIfAbsent(Categories.AUTHENTICATION.name, x -> new JsonArray());
     categoryData.addAll(new HdfsReader(state).readSecondary(getAuthenticationDefinition(state).getAsJsonObject()));
     return secondaryInputs;
   }

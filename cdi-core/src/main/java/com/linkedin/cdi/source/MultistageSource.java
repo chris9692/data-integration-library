@@ -138,6 +138,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     JsonArray authentications = secondaryInputs.get(KEY_WORD_AUTHENTICATION);
     JsonArray activations = secondaryInputs.computeIfAbsent(KEY_WORD_ACTIVATION, x -> new JsonArray());
     JsonArray payloads = secondaryInputs.computeIfAbsent(KEY_WORD_PAYLOAD, x -> new JsonArray());
+    JsonArray validations = secondaryInputs.computeIfAbsent(KEY_WORD_VALIDATION, x -> new JsonArray());
 
     // create a dummy activation if there is no activation secondary input nor defined unit watermark
     if (activations.size() == 0
@@ -175,13 +176,17 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         wu.setProp(MSTAGE_ACTIVATION_PROPERTY.toString(),
             getUpdatedWorkUnitActivation(wu, authentications.get(0).getAsJsonObject()));
       }
-        // unlike activation secondary inputs, payloads will be processed in each work unit
-        // and payloads will not be loaded until the Connection executes the command
-        wu.setProp(MSTAGE_PAYLOAD_PROPERTY.toString(), payloads);
+      // unlike activation secondary inputs, payloads will be processed in each work unit
+      // and payloads will not be loaded until the Connection executes the command
+      wu.setProp(MSTAGE_PAYLOAD_PROPERTY.toString(), payloads);
+
+      // Validations will be passed to work unit execution, they are not loaded upfront
+      wu.setProp(MSTAGE_VALIDATION_PROPERTY.toString(), validations);
+
     }
 
     if (eventReporter != null) {
-      // Send workunit creation event
+      // Send work unit creation event
       eventReporter.send(EventHelper.createWorkunitCreationEvent(state,wuList,getClass().getName()));
     }
     return wuList;
