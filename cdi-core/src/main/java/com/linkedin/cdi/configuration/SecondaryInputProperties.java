@@ -139,7 +139,7 @@ public class SecondaryInputProperties extends JsonArrayProperties {
     for (JsonElement entry : get(state)) {
       if (entry.isJsonObject() && entry.getAsJsonObject().has(CATEGORY)) {
         String category = entry.getAsJsonObject().get(CATEGORY).getAsString();
-        if (category.equalsIgnoreCase(Categories.AUTHENTICATION.name)) {
+        if (Categories.AUTHENTICATION.equals(category)) {
           return entry.getAsJsonObject();
         }
       }
