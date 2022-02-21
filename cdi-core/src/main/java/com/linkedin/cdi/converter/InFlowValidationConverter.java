@@ -129,12 +129,11 @@ public class InFlowValidationConverter extends Converter<Schema, Schema, Generic
    * @return the expected row count
    */
   private long getBaseRowCount(WorkUnitState workUnitState) {
-    JsonArray validations = JsonUtils.filter(SecondaryInputProperties.CATEGORY,
-        SecondaryInputProperties.Categories.VALIDATION.name,
+    JsonArray validations = JsonUtils.filter(KEY_WORD_CATEGORY, KEY_WORD_VALIDATION,
         MSTAGE_SECONDARY_INPUT.get(workUnitState));
 
     // by default, we expect 1 record
-    if (validations.size() == 0) {
+    if (validations.isJsonNull() || validations.size() == 0) {
       return 1;
     }
 

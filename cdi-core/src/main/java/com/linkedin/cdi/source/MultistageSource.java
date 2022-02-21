@@ -138,7 +138,6 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     JsonArray authentications = secondaryInputs.get(KEY_WORD_AUTHENTICATION);
     JsonArray activations = secondaryInputs.computeIfAbsent(KEY_WORD_ACTIVATION, x -> new JsonArray());
     JsonArray payloads = secondaryInputs.computeIfAbsent(KEY_WORD_PAYLOAD, x -> new JsonArray());
-    JsonArray validations = secondaryInputs.computeIfAbsent(KEY_WORD_VALIDATION, x -> new JsonArray());
 
     // create a dummy activation if there is no activation secondary input nor defined unit watermark
     if (activations.size() == 0
@@ -179,10 +178,6 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
       // unlike activation secondary inputs, payloads will be processed in each work unit
       // and payloads will not be loaded until the Connection executes the command
       wu.setProp(MSTAGE_PAYLOAD_PROPERTY.toString(), payloads);
-
-      // Validations will be passed to work unit execution, they are not loaded upfront
-      wu.setProp(MSTAGE_VALIDATION_PROPERTY.toString(), validations);
-
     }
 
     if (eventReporter != null) {

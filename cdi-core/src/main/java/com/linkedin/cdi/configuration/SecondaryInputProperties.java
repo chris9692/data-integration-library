@@ -42,6 +42,10 @@ public class SecondaryInputProperties extends JsonArrayProperties {
     Categories(String name) {
       this.name = name;
     }
+
+    public boolean equals(String category) {
+      return category.equalsIgnoreCase(name);
+    }
   }
 
   /**
@@ -109,14 +113,11 @@ public class SecondaryInputProperties extends JsonArrayProperties {
           : Categories.ACTIVATION.name;
 
       JsonArray categoryData = secondaryInputs.computeIfAbsent(category, x -> new JsonArray());
-      if (category.equalsIgnoreCase(Categories.ACTIVATION.name) || category.equalsIgnoreCase(Categories.AUTHENTICATION.name)) {
+      if (Categories.ACTIVATION.equals(category) || Categories.AUTHENTICATION.equals(category)) {
         categoryData.addAll(new HdfsReader(state).readSecondary(entry.getAsJsonObject()));
-      }
-
-      if (entry.getAsJsonObject().has(KEY_WORD_PATH) && category.equalsIgnoreCase(Categories.PAYLOAD.name)) {
+      } else if (entry.getAsJsonObject().has(KEY_WORD_PATH)) {
         categoryData.add(entry);
       }
-
     }
     return secondaryInputs;
   }

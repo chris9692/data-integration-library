@@ -207,8 +207,6 @@ public interface PropertyCollection {
   JsonArrayProperties MSTAGE_TARGET_SCHEMA = new JsonArrayProperties("ms.target.schema");
   StringProperties MSTAGE_TARGET_SCHEMA_URN = new StringProperties("ms.target.schema.urn");
   StringProperties MSTAGE_TOTAL_COUNT_FIELD = new StringProperties("ms.total.count.field");
-
-  // ms.validation.attributes is customer facing, it is used to defined validation rules
   JsonObjectProperties MSTAGE_VALIDATION_ATTRIBUTES =
       new JsonObjectProperties("ms.validation.attributes") {
         @Override
@@ -219,10 +217,6 @@ public interface PropertyCollection {
           return attributesJson;
         }
       };
-
-  // ms.validation.property is DIL internal, it is used to pass validation secondary input definition
-  // to work unit execution
-  JsonArrayProperties MSTAGE_VALIDATION_PROPERTY = new JsonArrayProperties("ms.validation.property");
 
   // default: 600 second, minimum: 0 second, maximum: 24 hours
   LongProperties MSTAGE_WAIT_TIMEOUT_SECONDS = new LongProperties("ms.wait.timeout.seconds", 600L, 24 * 3600L, 0L) {
