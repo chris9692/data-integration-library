@@ -262,6 +262,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
           input = ((InputStreamProcessor) transformer).process(input);
         }
       }
+      workUnitStatus.setBuffer(input);
     } catch (IOException e) {
       LOG.error("Error applying preprocessors to the input stream: {}, cause: {}",
           e.getMessage(),
