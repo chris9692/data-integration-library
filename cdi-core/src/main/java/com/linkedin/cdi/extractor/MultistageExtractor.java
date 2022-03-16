@@ -256,13 +256,13 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
     }
 
     try {
-      InputStream input = workUnitStatus.getBuffer();
+      InputStream input = updatedStatus.getBuffer();
       for (StreamProcessor<?> transformer : extractorKeys.getPreprocessors()) {
         if (transformer instanceof InputStreamProcessor) {
           input = ((InputStreamProcessor) transformer).process(input);
         }
       }
-      workUnitStatus.setBuffer(input);
+      updatedStatus.setBuffer(input);
     } catch (IOException e) {
       LOG.error("Error applying preprocessors to the input stream: {}, cause: {}",
           e.getMessage(),
