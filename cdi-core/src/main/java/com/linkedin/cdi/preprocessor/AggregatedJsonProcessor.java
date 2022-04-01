@@ -4,7 +4,6 @@
 
 package com.linkedin.cdi.preprocessor;
 
-import com.google.api.client.json.Json;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -12,7 +11,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.linkedin.cdi.configuration.PropertyCollection;
-import com.linkedin.cdi.util.EncryptionUtils;
 import com.linkedin.cdi.util.JsonUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,23 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.gobblin.annotation.Alias;
-import org.apache.gobblin.codec.StreamCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.linkedin.cdi.configuration.PropertyCollection.*;
 import static com.linkedin.cdi.configuration.StaticConstants.*;
 
 
@@ -71,7 +60,6 @@ public class AggregatedJsonProcessor extends InputStreamProcessor {
     File file = path.toFile();
     file.deleteOnExit();
     file.setReadable(true, true);
-    OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(path.toFile()), StandardCharsets.UTF_8);
     if(inputStream != null) {
       JsonObject processed = new JsonObject();
       JsonElement input = new JsonParser().parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -116,10 +104,11 @@ public class AggregatedJsonProcessor extends InputStreamProcessor {
       } else if(input.isJsonArray()) {
         // TODO
       }
+      OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(path.toFile()), StandardCharsets.UTF_8);
       writer.write(processed.toString());
+      writer.flush();
+      writer.close();
     }
-    writer.flush();
-    writer.close();
     return Files.newInputStream(path);
   }
 

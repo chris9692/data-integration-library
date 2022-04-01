@@ -29,6 +29,6 @@ public class AggregatedJsonProcessorTest {
     InputStream output = processor.process(input);
     JsonElement json = new JsonParser().parse(new InputStreamReader(output, StandardCharsets.UTF_8));
     JsonObject jsonObject = json.getAsJsonObject();
-    Assert.assertTrue(jsonObject.entrySet().size() == 2);
+    Assert.assertTrue(jsonObject.entrySet().size() == 3);
   }
 }
