@@ -146,3 +146,9 @@ test {
     jvmArgs "-javaagent:$jmockitPath"
   }
 }
+
+test {
+  minHeapSize = "128m" // initial heap size
+  maxHeapSize = "4096m" // maximum heap size
+  jvmArgs '-XX:MaxPermSize=256m -Xmx4g' // mem argument for the test JVM
+}
